@@ -1,12 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-
-    // donno why, but this is required to get path from runtime
-    const images = [
+    // Default images and songs
+    const defaultImages = [
         chrome.runtime.getURL("images/jayhanuman.jpg"),
         chrome.runtime.getURL("images/hanumanji.jpg"),
         chrome.runtime.getURL("images/krishna.jpg")
     ];
-    const songs = [
+    const defaultSongs = [
         chrome.runtime.getURL("songs/song.mp3"),
         chrome.runtime.getURL("songs/pavsat.mp3"),
         chrome.runtime.getURL("songs/raghuvandana.mp3")
@@ -18,26 +17,36 @@ document.addEventListener('DOMContentLoaded', () => {
         return arr[randomIndex];
     }
 
-    // Set random image and song
-    document.getElementById('imageDisplay').src = getRandomItem(images);
-    document.getElementById('audioSource').src = getRandomItem(songs);
+    // Fetch user settings from local storage
+    chrome.storage.local.get(['userImages', 'userSongs'], (result) => {
+        const userImages = result.userImages || defaultImages;
+        const userSongs = result.userSongs || defaultSongs;
 
-    const audioPlayer = document.getElementById('audioPlayer');
-    audioPlayer.volume = 0.5;  
-    audioPlayer.load();
+        // Set random image and song from user settings or defaults
+        document.getElementById('imageDisplay').src = getRandomItem(userImages);
+        document.getElementById('audioSource').src = getRandomItem(userSongs);
 
+        const audioPlayer = document.getElementById('audioPlayer');
+        audioPlayer.volume = 0.5;  
+        audioPlayer.load();
+    });
+
+    // Handle detected keyword and element display
+    chrome.storage.local.get(['detectedKeyword', 'detectedElement'], (result) => {
+        const detectedKeyword = result.detectedKeyword;
+        const detectedElement = result.detectedElement;
+        
+        if (detectedKeyword && detectedElement) {
+            // Add detected keyword and element to the HTML
+            const keywordDisplay = document.createElement('p');
+            keywordDisplay.innerHTML = `Detected Keyword: <strong>${detectedKeyword}</strong>`;
+            document.body.insertBefore(keywordDisplay, document.querySelector('audio'));
+            
+            const elementDisplay = document.createElement('p');
+            elementDisplay.innerHTML = `Content around detected keyword: <em>${detectedElement}</em>`;
+            document.body.insertBefore(elementDisplay, document.querySelector('audio'));
+        }
+    });
 });
 
-
-window.addEventListener('beforeunload', (event) => {
-    const prompt = window.prompt("Bhai sab normal he na, else refresh kar ye page ekbar.");
-    if (prompt) {
-        // This line won't close the window due to browser security restrictions
-        // window.close(); 
-    } else {
-        window.location.reload();
-    }
-    // Some browsers require this line to show the default confirmation dialog
-    event.preventDefault();
-    event.returnValue = '';
-});
+// Removed the beforeunload handler as it isn't effective for this purpose

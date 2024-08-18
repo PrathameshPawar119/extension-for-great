@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+</head>
+<body>
+    <h1>Customize Your Blocker</h1>
+    <form id="settingsForm">
+        <label for="imageUpload">Upload an Image:</label>
+        <input type="file" id="imageUpload" accept="image/*"><br><br>
+
+        <label for="songUpload">Upload a Song:</label>
+        <input type="file" id="songUpload" accept="audio/*"><br><br>
+
+        <label for="redirectUrl">Redirect URL:</label>
+        <input type="url" id="redirectUrl"><br><br>
+
+        <button type="button" id="saveSettings">Save Settings</button>
+        <button type="button" id="resetSettings">Reset to Defaults</button>
+    </form>
+
+    <script src="options.js"></script>
+</body>
+</html>
